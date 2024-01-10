@@ -1,0 +1,39 @@
+@startuml
+hide empty members
+
+class Product{
+}
+
+abstract class Server{
+}
+
+class ListServer{
+}
+
+class MapServer{
+}
+
+class Client{
+ + get_total_price(n_letters: int): int || float
+}
+
+class Error{
+}
+
+class TooManyProductsFoundError{
+}
+
+Server <|-- ListServer
+
+Server <|-- MapServer
+
+ListServer "1" *-- "*" Product
+
+MapServer "1" *-- "*" Product
+
+Client o-- Server
+
+Error <|-- TooManyProductsFoundError
+
+Client --> TooManyProductsFoundError : <<throws>>
+@enduml
