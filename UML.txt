@@ -2,6 +2,8 @@
 hide empty members
 
 class Product{
+ + __eq__(product: Product): bool
+ + __hash__(): (string, int || float)
 }
 
 abstract class Server{
