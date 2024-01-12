@@ -1,8 +1,8 @@
 import unittest
-from servers import Product
+from servers import Product, ListServer, MapServer
 
 
-class MyTestCase(unittest.TestCase):
+class Product_test(unittest.TestCase):
     def test_something(self):
         #Class Product:
 
@@ -89,6 +89,59 @@ class MyTestCase(unittest.TestCase):
         a = p1.get_price() + 100
         self.assertEqual(p1.get_price(), 12)
         self.assertEqual(p1.get(), ("aaa2137", 12)) #krotki są niemutowalne
-
+        
+        #Server inherited classes:
+        prod_list = [Product("a1",1), Product("b2", 2), Product("c3",3)]
+        new_prod1 = Product("d4",4)
+        new_prod2 = Product("e5",5)
+        
+        #CLASS listServer
+            # __init__
+        sl1 = ListServer(prod_list)
+        sl2 = ListServer()
+        self.assertEqual(sl1.LIST, [Product("a1",1), Product("b2", 2), Product("c3",3)])
+        self.assertEqual(sl2.LIST, [])
+        with self.assertRaises(TypeError):
+            ListServer(1)
+        with self.assertRaises(TypeError):
+            ListServer([new_prod1, "aj"])
+            
+            # add
+        sl1.add(new_prod1)
+        sl2.add(new_prod1)
+        self.assertEqual(sl1.LIST, [Product("a1",1), Product("b2", 2), Product("c3",3), new_prod1])
+        self.assertEqual(sl2.LIST, [new_prod1])
+        sl1.add(new_prod2)
+        sl2.add(new_prod2)
+        self.assertEqual(sl1.LIST, [Product("a1",1), Product("b2", 2), Product("c3",3), new_prod1, new_prod2])
+        self.assertEqual(sl2.LIST, [new_prod1, new_prod2])
+        with self.assertRaises(ValueError):
+            sl1.add("aj")
+                
+        #CLASS MapServer
+            # __init__
+        sm1 = MapServer(prod_list)
+        sm2 = MapServer()
+        self.assertDictEqual(sm1.MAP, {"a1":Product("a1",1), "c3":Product("c3",3), "b2":Product("b2", 2)})
+        self.assertDictEqual(sm2.MAP, dict({}))
+        with self.assertRaises(TypeError):
+            MapServer(1)
+        with self.assertRaises(TypeError):
+            MapServer([new_prod1, "aj"])
+                
+            # add
+        sm1.add(new_prod1)
+        sm2.add(new_prod1)
+        self.assertDictEqual(sm1.MAP, {"a1":Product("a1",1), "c3":Product("c3",3), "b2":Product("b2", 2), new_prod1.get_name():new_prod1})
+        self.assertDictEqual(sm2.MAP, dict({new_prod1.get_name():new_prod1}))
+        sm1.add(new_prod2)
+        sm2.add(new_prod2)
+        self.assertDictEqual(sm1.MAP, {"a1":Product("a1",1), "c3":Product("c3",3), "b2":Product("b2", 2), new_prod1.get_name():new_prod1, new_prod2.get_name():new_prod2})
+        self.assertDictEqual(sm2.MAP, dict({new_prod1.get_name():new_prod1, new_prod2.get_name():new_prod2}))
+        with self.assertRaises(ValueError):
+            sm1.add("aj")
+            
+        
 if __name__ == '__main__':
     unittest.main()
+

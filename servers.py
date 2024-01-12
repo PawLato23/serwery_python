@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from typing import Optional
+from abc import ABC
 
 
 class Product:
@@ -42,15 +43,29 @@ class Product:
     def get(self):
         return (self.name, self.price)
 
-class TooManyProductsFoundError(Exception): #raise TooManyProductsFoundError("o 2 za duzo")
+class ServerError(Exception):
     pass
 
+class TooManyProductsFoundError(ServerError): #raise TooManyProductsFoundError("o 2 za duzo")
+    pass
 
-class ListServer:
+class Server(ABC):
+    def __init__(self, product_list: list()):
+        raise NotImplementedError("not having __init__ method")
+    
+    def __str__(self):
+        raise NotImplementedError("not having __str__ method")
+        
+    def add(self, new_prod: Product):
+        raise NotImplementedError("not having add(Product) method")
+        
+
+class ListServer(Server):
     LIST = list()
     def __init__(self, list_of_products: list()=None):
         if list_of_products is None:    #chyba nie potrzebne wg mdig, ale...
             self.LIST = []
+            return
         elif type(list_of_products) != list:    #sprawdzanie, czy dostaje się liste
             raise TypeError
         else:   #sprawdzenie, czy wszędzie jest Product
@@ -58,7 +73,7 @@ class ListServer:
                 if not isinstance(it, Product):
                     raise TypeError
         
-        self.LIST = list_of_products
+        self.LIST = list_of_products.copy()
     
     def __str__(self):
         return str(self.LIST)
@@ -71,11 +86,12 @@ class ListServer:
             
 
 
-class MapServer:
+class MapServer(Server):
     MAP = dict()
     def __init__(self, list_of_products: list()=None):
         if list_of_products is None:    #chyba nie potrzebne wg mdig, ale...
-            self.MAP = []
+            self.MAP = {}
+            return
         elif type(list_of_products) != list:    #sprawdzanie, czy dostaje się liste
             raise TypeError
         else:   #sprawdzenie, czy wszędzie jest Product
@@ -98,7 +114,10 @@ class MapServer:
             raise ValueError
 
 class Client:
-
+    def __init__(self, server: Server):
+        #self.client_server = server
+        pass       
+    
     def get_total_price(self, n_letters: Optional[int]) -> Optional[float]:
         raise NotImplementedError()
 
