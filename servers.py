@@ -8,7 +8,7 @@ class Product:
     def __init__(self, name: str, price: float):
         if not name.isalnum():  #sprawdzenie czy na pewno tylko litery i cyfry
             raise ValueError
-        if not isinstance(price, (int, float)):
+        if not (isinstance(price, (int, float)) and price > 0):
             raise ValueError
         #sprawdzenie, czy na pewno foramat xxx000
         nnum = nchr = 0
@@ -35,6 +35,12 @@ class Product:
     def __str__(self):
         return f"{self.name} : {self.price}"
 
+    def get_name(self): 
+        return self.name
+    def get_price(self):
+        return self.price
+    def get(self):
+        return (self.name, self.price)
 
 class TooManyProductsFoundError(Exception):
     pass
@@ -52,7 +58,9 @@ class Client:
 
     def get_total_price(self, n_letters: Optional[int]) -> Optional[float]:
         raise NotImplementedError()
-        
+
+'''        
 p1 = Product("aaa1321", 12)
 p2 = Product("aab2", 13)
 p3 = Product("aaa1321", 12)
+'''

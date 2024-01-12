@@ -16,11 +16,15 @@ class MyTestCase(unittest.TestCase):
             Product("!a1", 12)
         with self.assertRaises(ValueError):
             Product("a1%", 12)
-        # price to float lub int
+        # price to float lub int >0
         Product("a1", int(123))
         Product("a1", float(123.123))
         with self.assertRaises(ValueError):
             Product("a1", "a")
+        with self.assertRaises(ValueError):
+            Product("a1", -2)
+        with self.assertRaises(ValueError):
+            Product("a1", 0)
         # przynajmniej 1 cyfra i 1 litera
         with self.assertRaises(ValueError):
             Product("a", 12)
@@ -76,7 +80,15 @@ class MyTestCase(unittest.TestCase):
         self.assertNotEqual(p2, p3)
         self.assertNotEqual(p2, p4)
         self.assertNotEqual(p2, p5)
-
+            
+            #get, get_name, get_price  - testy enkapsulacji
+        self.assertEqual(p1.get_name(), "aaa2137")
+        a = p1.get_name() + "a"
+        self.assertEqual(p1.get_name(), "aaa2137")
+        self.assertEqual(p1.get_price(), 12)
+        a = p1.get_price() + 100
+        self.assertEqual(p1.get_price(), 12)
+        self.assertEqual(p1.get(), ("aaa2137", 12)) #krotki są niemutowalne
 
 if __name__ == '__main__':
     unittest.main()

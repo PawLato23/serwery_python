@@ -2,8 +2,13 @@
 hide empty members
 
 class Product{
+ + __init__(name: str, price: float||int)
  + __eq__(product: Product): bool
- + __hash__(): (string, int || float)
+ + __hash__(): unique_int
+ + __str__(): str
+ + get_name(): str
+ + get_price(): int||float
+ + get(): Tuple(str, int||flloat)
 }
 
 abstract class Server{
