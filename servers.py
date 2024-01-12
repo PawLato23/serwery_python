@@ -42,17 +42,60 @@ class Product:
     def get(self):
         return (self.name, self.price)
 
-class TooManyProductsFoundError(Exception):
+class TooManyProductsFoundError(Exception): #raise TooManyProductsFoundError("o 2 za duzo")
     pass
 
 
 class ListServer:
-    pass
+    LIST = list()
+    def __init__(self, list_of_products: list()=None):
+        if list_of_products is None:    #chyba nie potrzebne wg mdig, ale...
+            self.LIST = []
+        elif type(list_of_products) != list:    #sprawdzanie, czy dostaje się liste
+            raise TypeError
+        else:   #sprawdzenie, czy wszędzie jest Product
+            for it in list_of_products:
+                if not isinstance(it, Product):
+                    raise TypeError
+        
+        self.LIST = list_of_products
+    
+    def __str__(self):
+        return str(self.LIST)
+    
+    def add(self, new_product: Product):
+        if type(new_product) == Product:
+            self.LIST.append(new_product)
+        else:
+            raise ValueError
+            
 
 
 class MapServer:
-    pass
-
+    MAP = dict()
+    def __init__(self, list_of_products: list()=None):
+        if list_of_products is None:    #chyba nie potrzebne wg mdig, ale...
+            self.MAP = []
+        elif type(list_of_products) != list:    #sprawdzanie, czy dostaje się liste
+            raise TypeError
+        else:   #sprawdzenie, czy wszędzie jest Product
+            for it in list_of_products:
+                if not isinstance(it, Product):
+                    raise TypeError
+        for it in list_of_products:     
+            #!!!"typ dict, kluczem jest nazwa produktu" - bezsens lekki, więc pytanie, czy dodajemy
+            # jakies sprawdzanie, czy napewno już takiego klucza nie bylo?
+            self.MAP[it.get_name()] = it
+            
+    def __str__(self):
+        return str(self.MAP)
+    
+    def add(self, new_product: Product):
+        if type(new_product) == Product:
+            #!!! ta sama sytuacja, co w init, czy dodajemy testy
+            self.MAP[new_product.get_name()] = new_product
+        else:
+            raise ValueError
 
 class Client:
 
