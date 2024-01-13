@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from typing import Optional
+from typing import Optional, List
 from abc import ABC
 
 
@@ -38,80 +38,79 @@ class Product:
 
     def get_name(self): 
         return self.name
+
     def get_price(self):
         return self.price
+
     def get(self):
         return (self.name, self.price)
+
 
 class ServerError(Exception):
     pass
 
+
 class TooManyProductsFoundError(ServerError): #raise TooManyProductsFoundError("o 2 za duzo")
     pass
 
+
 class Server(ABC):
-    def __init__(self, product_list: list()):
-        raise NotImplementedError("not having __init__ method")
-    
+    n_max_returned_entries = 5
+
+    def __init__(self, list_of_products: List):
+        if type(list_of_products) != list:
+            raise TypeError
+
     def __str__(self):
         raise NotImplementedError("not having __str__ method")
-        
-    def add(self, new_prod: Product):
-        raise NotImplementedError("not having add(Product) method")
-        
+
+    def entries(self, n_letters: int) -> List:
+        raise NotImplementedError("not having this method")
+
+    def check_entry(self, product: Product) -> bool:
+        pass
+
+    def get_entries(self, n_letters: int) -> List:
+        entries = self.entries(n_letters)
+        if len(entries) > self.n_max_returned_entries:
+            raise TooManyProductsFoundError
+        else:
+            return entries
+
 
 class ListServer(Server):
-    LIST = list()
-    def __init__(self, list_of_products: list()=None):
-        if list_of_products is None:    #chyba nie potrzebne wg mdig, ale...
-            self.LIST = []
-            return
-        elif type(list_of_products) != list:    #sprawdzanie, czy dostaje się liste
-            raise TypeError
-        else:   #sprawdzenie, czy wszędzie jest Product
-            for it in list_of_products:
-                if not isinstance(it, Product):
-                    raise TypeError
-        
-        self.LIST = list_of_products.copy()
-    
+    def __init__(self, list_of_products: List):
+        super().__init__(list_of_products)
+        self.products = list_of_products.copy()
+
     def __str__(self):
-        return str(self.LIST)
-    
-    def add(self, new_product: Product):
-        if type(new_product) == Product:
-            self.LIST.append(new_product)
-        else:
-            raise ValueError
-            
+        return str(self.products)
+
+    def entries(self, n_letters: int) -> List:
+        result_list = []
+        for prod in self.products:
+            if self.check_entry(prod):
+                result_list.append(prod)
+        return result_list
 
 
 class MapServer(Server):
-    MAP = dict()
-    def __init__(self, list_of_products: list()=None):
-        if list_of_products is None:    #chyba nie potrzebne wg mdig, ale...
-            self.MAP = {}
-            return
-        elif type(list_of_products) != list:    #sprawdzanie, czy dostaje się liste
-            raise TypeError
-        else:   #sprawdzenie, czy wszędzie jest Product
-            for it in list_of_products:
-                if not isinstance(it, Product):
-                    raise TypeError
-        for it in list_of_products:     
-            #!!!"typ dict, kluczem jest nazwa produktu" - bezsens lekki, więc pytanie, czy dodajemy
-            # jakies sprawdzanie, czy napewno już takiego klucza nie bylo?
-            self.MAP[it.get_name()] = it
-            
+    def __init__(self, list_of_products: List):
+        super().__init__(list_of_products)
+        self.products = dict()
+        for it in list_of_products:
+            self.products[it.get_name()] = it
+
     def __str__(self):
-        return str(self.MAP)
-    
-    def add(self, new_product: Product):
-        if type(new_product) == Product:
-            #!!! ta sama sytuacja, co w init, czy dodajemy testy
-            self.MAP[new_product.get_name()] = new_product
-        else:
-            raise ValueError
+        return str(self.products)
+
+    def entries(self, n_letters: int) -> List:
+        result_list = []
+        for prod in self.products.values():
+            if self.check_entry(prod):
+                result_list.append(prod)
+        return result_list
+
 
 class Client:
     def __init__(self, server: Server):
@@ -120,9 +119,3 @@ class Client:
     
     def get_total_price(self, n_letters: Optional[int]) -> Optional[float]:
         raise NotImplementedError()
-
-'''        
-p1 = Product("aaa1321", 12)
-p2 = Product("aab2", 13)
-p3 = Product("aaa1321", 12)
-'''

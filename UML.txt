@@ -12,21 +12,23 @@ class Product{
 }
 
 abstract class Server{
- + __init__(list_of_prods: list(Product))
- + __str__(): str
- + add(new_prod: Product)
+ + __init__()
+ + {abstract} __str__(): str
+ + {abstract} entries(n_letters: int)
+ + check_entry(product: Product): bool
+ + get_entries(n_letters: int)
 }
 
 class ListServer{
- + __init__(list_of_prods: list(Product))
+ + __init__(list_of_products: list(Product))
  + __str__(): str
- + add(new_prod: Product)
+ + entries(n_letters: int)
 }
 
 class MapServer{
- + __init__(list_of_prods: list(Product))
+ + __init__(list_of_products: list(Product))
  + __str__(): str
- + add(new_prod: Product)
+ + entries(n_letters: int)
 }
 
 class Client{
