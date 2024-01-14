@@ -1,12 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from typing import Optional, List
+from typing import Optional, List, Union, Tuple
 from abc import ABC
+import re
 
 
 class Product:
-    def __init__(self, name: str, price: float):
+    def __init__(self, name: str, price: Union[float, int]):
         if not name.isalnum():  #sprawdzenie czy na pewno tylko litery i cyfry
             raise ValueError
         if not (isinstance(price, (int, float)) and price > 0):
@@ -36,13 +37,13 @@ class Product:
     def __str__(self):
         return f"{self.name} : {self.price}"
 
-    def get_name(self): 
+    def get_name(self) -> str:
         return self.name
 
-    def get_price(self):
+    def get_price(self) -> Union[float,int]:
         return self.price
 
-    def get(self):
+    def get(self) -> Tuple[str,int]:
         return (self.name, self.price)
 
 
@@ -64,18 +65,15 @@ class Server(ABC):
     def __str__(self):
         raise NotImplementedError("not having __str__ method")
 
-    def entries(self, n_letters: int) -> List:
+    def check_entries(self, n_letters: int) -> List[Product]:
         raise NotImplementedError("not having this method")
 
-    def check_entry(self, product: Product) -> bool:
-        pass
-
-    def get_entries(self, n_letters: int) -> List:
-        entries = self.entries(n_letters)
+    def get_entries(self, n_letters: int) -> List[Product]:
+        entries = self.check_entries(n_letters)
         if len(entries) > self.n_max_returned_entries:
             raise TooManyProductsFoundError
         else:
-            return entries
+            return sorted(entries, key=lambda x: x.get_price())
 
 
 class ListServer(Server):
@@ -86,10 +84,10 @@ class ListServer(Server):
     def __str__(self):
         return str(self.products)
 
-    def entries(self, n_letters: int) -> List:
+    def check_entries(self, n_letters: int) -> List[Product]:
         result_list = []
         for prod in self.products:
-            if self.check_entry(prod):
+            if re.fullmatch('^[a-zA-Z]{{{n}}}\\d{{2,3}}$'.format(n=n_letters), prod.get_name()) is not None:
                 result_list.append(prod)
         return result_list
 
@@ -104,18 +102,26 @@ class MapServer(Server):
     def __str__(self):
         return str(self.products)
 
-    def entries(self, n_letters: int) -> List:
+    def check_entries(self, n_letters: int) -> List[Product]:
         result_list = []
         for prod in self.products.values():
-            if self.check_entry(prod):
+            if re.fullmatch('^[a-zA-Z]{{{n}}}\\d{{2,3}}$'.format(n=n_letters), prod.get_name()) is not None:
                 result_list.append(prod)
         return result_list
 
 
 class Client:
     def __init__(self, server: Server):
-        #self.client_server = server
-        pass       
+        self.client_server = server
     
     def get_total_price(self, n_letters: Optional[int]) -> Optional[float]:
-        raise NotImplementedError()
+        try:
+            products = self.client_server.get_entries(n_letters)
+            if not products:
+                return None
+        except TooManyProductsFoundError:
+            return None
+        price = 0.0
+        for prod in products:
+            price += prod.get_price()
+        return price

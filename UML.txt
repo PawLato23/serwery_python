@@ -14,25 +14,24 @@ class Product{
 abstract class Server{
  + __init__()
  + {abstract} __str__(): str
- + {abstract} entries(n_letters: int)
- + check_entry(product: Product): bool
- + get_entries(n_letters: int)
+ + {abstract} check_entries(n_letters: int): list(Prodcts)
+ + get_entries(n_letters: int): list(Prodcts)
 }
 
 class ListServer{
  + __init__(list_of_products: list(Product))
  + __str__(): str
- + entries(n_letters: int)
+ + check_entries(n_letters: int): list(Prodcts)
 }
 
 class MapServer{
  + __init__(list_of_products: list(Product))
  + __str__(): str
- + entries(n_letters: int)
+ + check_entries(n_letters: int): list(Prodcts)
 }
 
 class Client{
- + get_total_price(n_letters: int): int || float
+ + get_total_price(n_letters: int): float
 }
 
 class ServerError{

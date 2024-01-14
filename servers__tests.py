@@ -1,5 +1,5 @@
 import unittest
-from servers import Product, ListServer, MapServer
+from servers import Product, ListServer, MapServer, Client, TooManyProductsFoundError
 
 
 class Product_test(unittest.TestCase):
@@ -86,6 +86,19 @@ class Product_test(unittest.TestCase):
         with self.assertRaises(TypeError):
             ListServer(1)
 
+    def test_ListServer_get_entries(self):
+        prod_list1 = [Product("ab12", 1), Product("Bb231", 4), Product("CB33", 3), Product("ac1241", 4),
+                      Product("GIjs12", 1)]
+        prod_list2 = [Product("ab12", 1), Product("Bb231", 2), Product("CB33", 3), Product("ac124", 4),
+                      Product("GI12", 1), Product("AI12", 5)]
+        sl1 = ListServer(prod_list1)
+        self.assertEqual(sl1.get_entries(2), [Product("ab12", 1), Product("CB33", 3), Product("Bb231", 4)])
+        self.assertEqual(sl1.get_entries(3), [])
+        self.assertEqual(sl1.get_entries(4), [Product("GIjs12", 1)])
+        sl2 = ListServer(prod_list2)
+        with self.assertRaises(TooManyProductsFoundError):
+            res = sl2.get_entries(2)
+
     def test_MapServer_init(self):
         prod_list = [Product("a1", 1), Product("b2", 2), Product("c3", 3)]
 
@@ -93,7 +106,35 @@ class Product_test(unittest.TestCase):
         self.assertDictEqual(sm1.products, {"a1": Product("a1", 1), "c3": Product("c3", 3), "b2": Product("b2", 2)})
         with self.assertRaises(TypeError):
             MapServer(1)
-            
+
+    def test_MapServer_get_entries(self):
+        prod_list1 = [Product("ab12", 1), Product("Bb231", 4), Product("CB33", 3), Product("ac1241", 4),
+                      Product("GIjs12", 1)]
+        prod_list2 = [Product("ab12", 1), Product("Bb231", 2), Product("CB33", 3), Product("ac124", 4),
+                      Product("GI12", 1), Product("AI12", 5)]
+        sm1 = MapServer(prod_list1)
+        self.assertEqual(sm1.get_entries(2), [Product("ab12", 1), Product("CB33", 3), Product("Bb231", 4)])
+        self.assertEqual(sm1.get_entries(3), [])
+        self.assertEqual(sm1.get_entries(4), [Product("GIjs12", 1)])
+        sm2 = MapServer(prod_list2)
+        with self.assertRaises(TooManyProductsFoundError):
+            res = sm2.get_entries(2)
+
+    def test_Client(self):
+        prod_list1 = [Product("ab12", 1), Product("Bb231", 4), Product("CB33", 3), Product("ac1241", 4),
+                      Product("GIjs12", 1)]
+        prod_list2 = [Product("ab12", 1), Product("Bb231", 2), Product("CB33", 3), Product("ac124", 4),
+                      Product("GI12", 1), Product("AI12", 5)]
+        sl = ListServer(prod_list1)
+        sm = MapServer(prod_list2)
+        c1 = Client(sl)
+        c2 = Client(sl)
+        c3 = Client(sm)
+        self.assertEqual(c1.get_total_price(2), 8)
+        self.assertEqual(c2.get_total_price(2), 8)
+        self.assertEqual(c2.get_total_price(3), None)
+        self.assertEqual(c3.get_total_price(2), None)
+        self.assertEqual(c3.get_total_price(4), None)
         
 if __name__ == '__main__':
     unittest.main()
