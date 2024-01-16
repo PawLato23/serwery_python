@@ -17,8 +17,6 @@ class Product_test(unittest.TestCase):
         with self.assertRaises(ValueError):
             Product("a1", -2)
         with self.assertRaises(ValueError):
-            Product("a1", 0)
-        with self.assertRaises(ValueError):
             Product("a", 12)
         with self.assertRaises(ValueError):
             Product("ba", 2137)
@@ -42,7 +40,8 @@ class Product_test(unittest.TestCase):
         a = p1.get_price() + 100
         self.assertEqual(p1.get_price(), 12)
         self.assertEqual(p1.get(), ("aaa2137", 12))  # krotki są niemutowalne
-            
+        self.assertEqual(Product("a1", 0), ("a1",0))    
+        
     def test_Product_hash_eq(self):
         self.assertNotEqual(hash(Product("a1", 1)), hash(Product("A1", 1)))
         

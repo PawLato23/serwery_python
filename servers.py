@@ -10,7 +10,7 @@ class Product:
     def __init__(self, name: str, price: Union[float, int]):
         if not name.isalnum():  #sprawdzenie czy na pewno tylko litery i cyfry
             raise ValueError
-        if not (isinstance(price, (int, float)) and price > 0):
+        if not (isinstance(price, (int, float)) and price >= 0):
             raise ValueError
         #sprawdzenie, czy na pewno foramat xxx000
         nnum = nchr = 0
