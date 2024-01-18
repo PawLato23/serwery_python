@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from typing import Optional, List, Union, Tuple
+from typing import Optional, List, Union
 from abc import ABC
 import re
 
@@ -64,7 +64,7 @@ class Server(ABC):
         if len(entries) > self.n_max_returned_entries:
             raise TooManyProductsFoundError
         else:
-            return sorted(entries, key=lambda x: x.get_price())
+            return sorted(entries, key=lambda x: x.price)
 
 
 class ListServer(Server):
@@ -78,7 +78,7 @@ class ListServer(Server):
     def check_entries(self, n_letters: int) -> List[Product]:
         result_list = []
         for prod in self.products:
-            if re.fullmatch('^[a-zA-Z]{{{n}}}\\d{{2,3}}$'.format(n=n_letters), prod.get_name()) is not None:
+            if re.fullmatch('^[a-zA-Z]{{{n}}}\\d{{2,3}}$'.format(n=n_letters), prod.name) is not None:
                 result_list.append(prod)
         return result_list
 
@@ -88,7 +88,7 @@ class MapServer(Server):
         super().__init__(list_of_products)
         self.products = dict()
         for it in list_of_products:
-            self.products[it.get_name()] = it
+            self.products[it.name] = it
 
     def __str__(self):
         return str(self.products)
@@ -96,7 +96,7 @@ class MapServer(Server):
     def check_entries(self, n_letters: int) -> List[Product]:
         result_list = []
         for prod in self.products.values():
-            if re.fullmatch('^[a-zA-Z]{{{n}}}\\d{{2,3}}$'.format(n=n_letters), prod.get_name()) is not None:
+            if re.fullmatch('^[a-zA-Z]{{{n}}}\\d{{2,3}}$'.format(n=n_letters), prod.name) is not None:
                 result_list.append(prod)
         return result_list
 
@@ -114,5 +114,5 @@ class Client:
             return None
         price = 0.0
         for prod in products:
-            price += prod.get_price()
+            price += prod.price
         return price
