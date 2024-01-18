@@ -6,9 +6,6 @@ class Product{
  + __eq__(product: Product): bool
  + __hash__(): unique_int
  + __str__(): str
- + get_name(): str
- + get_price(): int||float
- + get(): Tuple(str, int||flloat)
 }
 
 abstract class Server{
