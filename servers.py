@@ -37,15 +37,6 @@ class Product:
     def __str__(self):
         return f"{self.name} : {self.price}"
 
-    def get_name(self) -> str:
-        return self.name
-
-    def get_price(self) -> Union[float,int]:
-        return self.price
-
-    def get(self) -> Tuple[str,int]:
-        return (self.name, self.price)
-
 
 class ServerError(Exception):
     pass
